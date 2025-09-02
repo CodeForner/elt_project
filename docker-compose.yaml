@@ -1,0 +1,45 @@
+services:
+  db:
+    container_name: postgres_container
+    image: "postgres:17.6"
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_URL: ${POSTGRES_URL}
+    ports:
+      - 5000:5432
+    volumes:
+      - "/home/eric/Documentos/Learning/elt_project/postgres/airflow_sql_init.sql:/docker-entrypoint-initdb.d/airflow_init.sql"
+      - "/home/eric/Documentos/Learning/elt_project/postgres/superset_init.sql:/docker-entrypoint-initdb.d/superset_init.sql"
+
+      - ./postgres/data:/var/lib/postgresql/data
+
+  af:
+    container_name: airflow-container
+    image: "apache/airflow:3.0.0"
+    ports:
+      - 8000:8080
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@db:5432/airflow_db
+
+    command: >
+      bash -c "airflow db migrate && airflow standalone"
+    volumes:
+      - "/home/eric/Documentos/Learning/elt_project/airflow/dags:/opt/airflow/dags"
+      - ./api_request:/opt/airflow/api_request
+      - ./data:/opt/airflow/data
+    depends_on:
+      - db
+  superset:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+    container_name: superset-container
+    environment:
+      - ADMIN_USERNAME=admin
+      - ADMIN_EMAIL=admin@superset.com
+      - ADMIN_PASSWORD=admin
+    ports:
+      - "8088:8088"

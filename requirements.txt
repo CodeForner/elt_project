@@ -1,0 +1,7 @@
+dotenv>=0.9.9
+pandas>=2.3.2
+psycopg>=3.2.9
+psycopg2-binary>=2.9.10
+pyarrow>=21.0.0
+sqlalchemy>=2.0.43
+tqdm>=4.67.1
