@@ -11,9 +11,8 @@ services:
     ports:
       - 5000:5432
     volumes:
-      - "/home/eric/Documentos/Learning/elt_project/postgres/airflow_sql_init.sql:/docker-entrypoint-initdb.d/airflow_init.sql"
-      - "/home/eric/Documentos/Learning/elt_project/postgres/superset_init.sql:/docker-entrypoint-initdb.d/superset_init.sql"
-
+      - ./postgres/airflow_sql_init.sql:/docker-entrypoint-initdb.d/airflow_init.sql
+      - ./postgres/superset_init.sql:/docker-entrypoint-initdb.d/superset_init.sql
       - ./postgres/data:/var/lib/postgresql/data
 
   af:
@@ -27,7 +26,7 @@ services:
     command: >
       bash -c "airflow db migrate && airflow standalone"
     volumes:
-      - "/home/eric/Documentos/Learning/elt_project/airflow/dags:/opt/airflow/dags"
+      - ./airflow/dags:/opt/airflow/dags
       - ./api_request:/opt/airflow/api_request
       - ./data:/opt/airflow/data
     depends_on:
